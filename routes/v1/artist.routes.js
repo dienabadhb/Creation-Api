@@ -1,5 +1,6 @@
 import express from "express";
-import { getAll, getOne, createArtist, updateArtist, deleteArtist } from "../controllers/artist.controller.js";
+import { getAll, getOne, createArtist, updateArtist, deleteArtist } from "../../controllers/artist.controller.js";
+
 
 const router = express.Router();
 
