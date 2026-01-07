@@ -5,7 +5,8 @@ import formatConfig from "../config/format.js";
 function getResourceName(req, isCollection) {
   const base = req.path.split("/").filter(Boolean).pop();
   if (!base) return "data";
-  return isCollection ? base : base.slice(0, -1);
+  if (!isCollection && base.endsWith("s")) return base.slice(0, -1);
+  return base;
 }
 
 export default (req, res, next) => {
@@ -16,17 +17,18 @@ export default (req, res, next) => {
 
     if (format === "xml") {
       return res.type("xml").send(
-        create({ [rootName]: data.data }).end({ prettyPrint: true })
+        create({ [rootName]: data.data }).end({ prettyPrint: formatConfig.xmlIndent })
       );
     }
 
     if (format === "csv") {
-      return res
-        .type("text/csv")
-        .send(stringify(data.data, { header: true }));
+      return res.type("text/csv").send(
+        stringify(data.data, { header: true, delimiter: formatConfig.csvDelimiter })
+      );
     }
 
-    res.json(data);
+    return res.json(data);
   };
   next();
 };
+

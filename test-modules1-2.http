@@ -1,0 +1,48 @@
+### ✅ Créer un artiste (POST)
+POST http://localhost:3000/api/v1/artists
+Content-Type: application/json
+
+{
+  "name": "Daft Punk",
+  "country": "France"
+}
+
+###
+
+### ✅ Lister tous les artistes (JSON par défaut)
+GET http://localhost:3000/api/v1/artists
+
+###
+
+### ✅ Lister tous les artistes en XML
+GET http://localhost:3000/api/v1/artists?format=xml
+
+###
+
+### ✅ Lister tous les artistes en CSV
+GET http://localhost:3000/api/v1/artists?format=csv
+
+###
+
+### ✅ Récupérer un artiste spécifique (JSON)
+GET http://localhost:3000/api/v1/artists/1
+
+###
+
+### ✅ Récupérer un artiste spécifique (XML)
+GET http://localhost:3000/api/v1/artists/1?format=xml
+
+###
+
+### ✅ Mettre à jour un artiste (PATCH)
+PATCH http://localhost:3000/api/v1/artists/1
+Content-Type: application/json
+
+{
+  "country": "France / EU"
+}
+
+###
+
+### ✅ Supprimer un artiste (DELETE)
+DELETE http://localhost:3000/api/v1/artists/1
