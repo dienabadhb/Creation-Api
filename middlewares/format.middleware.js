@@ -11,24 +11,31 @@ function getResourceName(req, isCollection) {
 
 export default (req, res, next) => {
   res.sendFormatted = (data) => {
+    const payload = data.data !== undefined ? data.data : data;
     const format = req.query.format || formatConfig.defaultFormat;
-    const isCollection = Array.isArray(data.data);
+    const isCollection = Array.isArray(payload);
     const rootName = getResourceName(req, isCollection);
 
-    if (format === "xml") {
-      return res.type("xml").send(
-        create({ [rootName]: data.data }).end({ prettyPrint: formatConfig.xmlIndent })
-      );
-    }
+    try {
+      if (format === "xml") {
+        return res.type("application/xml").send(
+          create({ [rootName]: payload }).end({ prettyPrint: formatConfig.xmlIndent })
+        );
+      }
 
-    if (format === "csv") {
-      return res.type("text/csv").send(
-        stringify(data.data, { header: true, delimiter: formatConfig.csvDelimiter })
-      );
-    }
+      if (format === "csv") {
+        return res.type("text/csv").send(
+          stringify(payload, { header: true, delimiter: formatConfig.csvDelimiter })
+        );
+      }
 
-    return res.json(data);
+      return res.json({
+        data: payload,
+        links: data.links || undefined
+      });
+    } catch (err) {
+      next(err);
+    }
   };
   next();
 };
-

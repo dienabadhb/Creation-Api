@@ -1,10 +1,10 @@
 ### ✅ Créer un artiste (POST)
-POST http://localhost:3000/api/v1/artists
+POST http://localhost:3000/api/v1/artists/
 Content-Type: application/json
 
 {
   "name": "Daft Punk",
-  "country": "France"
+  "genre": "Electronic"
 }
 
 ###
@@ -39,10 +39,11 @@ PATCH http://localhost:3000/api/v1/artists/1
 Content-Type: application/json
 
 {
-  "country": "France / EU"
+  "genre": "Electronic / Dance"
 }
 
 ###
 
 ### ✅ Supprimer un artiste (DELETE)
 DELETE http://localhost:3000/api/v1/artists/1
+
