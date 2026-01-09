@@ -31,12 +31,12 @@ export const getOne = async (req, res, next) => {
 // Créer un nouvel artiste
 export const createArtist = async (req, res, next) => {
   try {
-    const { name, genre } = req.body;
+    const { name, genre, bio} = req.body;
     if (!name) {
       return res.status(400).json({ errors: { message: "Le champ 'name' est obligatoire" } });
     }
 
-    const artist = await Artist.create({ name, genre: genre || null });
+    const artist = await Artist.create({ name, genre: genre || null, bio: bio || null });
     const artistJSON = artist.toJSON();
     const links = generateArtistLinks(req, artistJSON);
 
@@ -52,10 +52,11 @@ export const updateArtist = async (req, res, next) => {
     const artist = await Artist.findByPk(req.params.id);
     if (!artist) return res.sendStatus(404);
 
-    const { name, genre } = req.body;
+    const { name, genre, bio} = req.body;
     await artist.update({ 
       name: name ?? artist.name,
-      genre: genre ?? artist.genre
+      genre: genre ?? artist.genre,
+      bio: bio ?? artist.bio
     });
 
     const artistJSON = artist.toJSON();
