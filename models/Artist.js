@@ -17,6 +17,7 @@ const Artist = db.define("Artist", {
     allowNull: true, 
   },
 });
+Artist.translatableFields = ["bio"];
 
 // Export du modèle pour l’utiliser dans les controllers
 export default Artist;
