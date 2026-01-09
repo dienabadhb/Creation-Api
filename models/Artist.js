@@ -12,6 +12,10 @@ const Artist = db.define("Artist", {
     type: DataTypes.STRING,
     allowNull: true, // facultatif
   },
+  bio: {
+    type: DataTypes.JSON,
+    allowNull: true, 
+  },
 });
 
 // Export du modèle pour l’utiliser dans les controllers
