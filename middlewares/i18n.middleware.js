@@ -1,13 +1,10 @@
 const i18nMiddleware = (req, res, next) => {
 
-    const lang = req.headers['accept-language']?.split(',')[0].split('-')[0] || 'fr';
+const lang = req.headers['accept-language']?.split(',')[0].split('-')[0] || 'fr';
 
-
-    const originalSend = res.send;
-
+const originalSend = res.send;
     res.send = function (body) {
-        const contentType = res.get('Content-Type');
-        
+      const contentType = res.get('Content-Type');
         if (contentType && contentType.includes('application/json')) {
             try {
                 let data = JSON.parse(body);

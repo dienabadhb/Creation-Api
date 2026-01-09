@@ -1,8 +1,6 @@
-// controllers/artist.controller.js
 import Artist from "../models/Artist.js";
 import { generateArtistLinks } from "../utils/hateoas.js";
 
-// Liste tous les artistes
 export const getAll = async (req, res, next) => {
   try {
     const artists = await Artist.findAll();
@@ -14,7 +12,6 @@ export const getAll = async (req, res, next) => {
   }
 };
 
-// Détail d’un artiste
 export const getOne = async (req, res, next) => {
   try {
     const artist = await Artist.findByPk(req.params.id);
@@ -28,7 +25,7 @@ export const getOne = async (req, res, next) => {
   }
 };
 
-// Créer un nouvel artiste
+
 export const createArtist = async (req, res, next) => {
   try {
     const { name, genre, bio} = req.body;
@@ -46,7 +43,6 @@ export const createArtist = async (req, res, next) => {
   }
 };
 
-// Mettre à jour un artiste
 export const updateArtist = async (req, res, next) => {
   try {
     const artist = await Artist.findByPk(req.params.id);
@@ -67,14 +63,14 @@ export const updateArtist = async (req, res, next) => {
   }
 };
 
-// Supprimer un artiste
+
 export const deleteArtist = async (req, res, next) => {
   try {
     const artist = await Artist.findByPk(req.params.id);
     if (!artist) return res.sendStatus(404);
 
     await artist.destroy();
-    res.sendStatus(204); // No Content
+    res.sendStatus(204); 
   } catch (err) {
     next(err);
   }
