@@ -6,8 +6,9 @@ import { generateArtistLinks } from "../utils/hateoas.js";
 export const getAll = async (req, res, next) => {
   try {
     const artists = await Artist.findAll();
-    const links = generateArtistLinks(req, artists);
-    res.sendFormatted({ data: artists, links });
+    const artistsJSON = artists.map(artist => artist.toJSON());
+    const links = generateArtistLinks(req, artistsJSON);
+    res.sendFormatted({ data: artistsJSON, links });
   } catch (err) {
     next(err);
   }
@@ -18,8 +19,10 @@ export const getOne = async (req, res, next) => {
   try {
     const artist = await Artist.findByPk(req.params.id);
     if (!artist) return res.sendStatus(404);
-    const links = generateArtistLinks(req, artist);
-    res.sendFormatted({ data: artist, links });
+
+    const artistJSON = artist.toJSON();
+    const links = generateArtistLinks(req, artistJSON);
+    res.sendFormatted({ data: artistJSON, links });
   } catch (err) {
     next(err);
   }
@@ -28,22 +31,16 @@ export const getOne = async (req, res, next) => {
 // Créer un nouvel artiste
 export const createArtist = async (req, res, next) => {
   try {
-    // 🔹 Ne prendre que les champs définis dans le modèle
-    const artistData = {
-      name: req.body.name,
-      genre: req.body.genre || null, // si pas fourni, null
-    };
-
-    // Vérification simple
-    if (!artistData.name) {
-      return res.status(400).json({
-        errors: { message: "Le champ 'name' est obligatoire" }
-      });
+    const { name, genre } = req.body;
+    if (!name) {
+      return res.status(400).json({ errors: { message: "Le champ 'name' est obligatoire" } });
     }
 
-    const artist = await Artist.create(artistData);
-    const links = generateArtistLinks(req, artist);
-    res.status(201).sendFormatted({ data: artist, links });
+    const artist = await Artist.create({ name, genre: genre || null });
+    const artistJSON = artist.toJSON();
+    const links = generateArtistLinks(req, artistJSON);
+
+    res.status(201).sendFormatted({ data: artistJSON, links });
   } catch (err) {
     next(err);
   }
@@ -55,14 +52,15 @@ export const updateArtist = async (req, res, next) => {
     const artist = await Artist.findByPk(req.params.id);
     if (!artist) return res.sendStatus(404);
 
-    const updateData = {};
-    if (req.body.name) updateData.name = req.body.name;
-    if (req.body.genre) updateData.genre = req.body.genre;
+    const { name, genre } = req.body;
+    await artist.update({ 
+      name: name ?? artist.name,
+      genre: genre ?? artist.genre
+    });
 
-    await artist.update(updateData);
-
-    const links = generateArtistLinks(req, artist);
-    res.sendFormatted({ data: artist, links });
+    const artistJSON = artist.toJSON();
+    const links = generateArtistLinks(req, artistJSON);
+    res.sendFormatted({ data: artistJSON, links });
   } catch (err) {
     next(err);
   }
@@ -75,7 +73,7 @@ export const deleteArtist = async (req, res, next) => {
     if (!artist) return res.sendStatus(404);
 
     await artist.destroy();
-    res.sendStatus(204);
+    res.sendStatus(204); // No Content
   } catch (err) {
     next(err);
   }
