@@ -9,6 +9,11 @@ const i18nMiddleware = (req, res, next) => {
             const rawItem = item.toJSON ? item.toJSON() : item;
             const fields = item.constructor.translatableFields || [];
 
+            fields.forEach(field => {
+                if (rawItem[field] && typeof rawItem[field] === 'object') {
+                    rawItem[field] = rawItem[field][lang] || rawItem[field]['fr'] || Object.values(rawItem[field])[0];
+                }
+            });
 
             return rawItem;
         };
