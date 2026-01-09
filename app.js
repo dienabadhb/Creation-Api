@@ -13,7 +13,6 @@ const app = express();
 app.use(express.json());
 app.use(i18nMiddleware);
 app.use(formatMiddleware);
-
 app.use("/api/v1", artistRoutes);
 
 

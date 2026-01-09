@@ -1,14 +1,14 @@
 ### Collection GET 
-GET http://localhost:3001/api/v1/artists
+GET http://localhost:3000/api/v1/artists
 Accept: text/xml, text/csv
 
 ### Collection POST 
-POST http://localhost:3001/api/v1/artists
+POST http://localhost:3000/api/v1/artists
 Content-Type: application/json
 
 {
   "name": "Daft Punk",
-  "genre": "Electronic"
+  "genre": "Electronic",
   "bio": {
     "fr":"Un duo de musique électronique français formé en 1993 à Paris par Thomas",
     "en":"A French electronic music duo formed in 1993 in Paris by Thomas"
@@ -16,22 +16,22 @@ Content-Type: application/json
 }
 
 ### Test i18n - Français
-GET http://localhost:3001/api/v1/artists
+GET http://localhost:3000/api/v1/artists
 Accept-Language: fr
 Accept: application/json
 
 ### Test i18n - Anglais
-GET http://localhost:3001/api/v1/artists
+GET http://localhost:3000/api/v1/artists
 Accept-Language: en
 Accept: application/json
 
 
 ### Item GET 
-GET http://localhost:3001/api/v1/artists/37
+GET http://localhost:3000/api/v1/artists/37
 Accept: text/xml, text/csv
 
 ### Item PATCH 
-PATCH http://localhost:3001/api/v1/artists/36
+PATCH http://localhost:3000/api/v1/artists/36
 Content-Type: application/json
 
 {

@@ -1,28 +1,37 @@
 const i18nMiddleware = (req, res, next) => {
+
     const lang = req.headers['accept-language']?.split(',')[0].split('-')[0] || 'fr';
-    const originalJson = res.json;
 
-    res.json = function (data) {
-        const translate = (item) => {
-            if (!item || typeof item !== 'object') return item;
 
-            const rawItem = item.toJSON ? item.toJSON() : item;
-            const fields = item.constructor.translatableFields || [];
+    const originalSend = res.send;
 
-            fields.forEach(field => {
-                if (rawItem[field] && typeof rawItem[field] === 'object') {
-                    rawItem[field] = rawItem[field][lang] || rawItem[field]['fr'] || Object.values(rawItem[field])[0];
-                }
-            });
+    res.send = function (body) {
+        const contentType = res.get('Content-Type');
+        
+        if (contentType && contentType.includes('application/json')) {
+            try {
+                let data = JSON.parse(body);
 
-            return rawItem;
-        };
+                const translate = (obj) => {
+                    if (!obj || typeof obj !== 'object') return obj;
+                    if (Array.isArray(obj)) return obj.map(translate);
 
-        const translatedData = Array.isArray(data) 
-            ? data.map(item => translate(item)) 
-            : translate(data);
+                    if (obj.bio && typeof obj.bio === 'object') {
+                        obj.bio = obj.bio[lang] || obj.bio['fr'] || Object.values(obj.bio)[0];
+                    }
 
-        return originalJson.call(this, translatedData);
+                    for (let key in obj) {
+                        if (typeof obj[key] === 'object') obj[key] = translate(obj[key]);
+                    }
+                    return obj;
+                };
+
+                data = translate(data);
+                body = JSON.stringify(data);
+            } catch (e) {
+            }
+        }
+        return originalSend.call(this, body);
     };
 
     next();
