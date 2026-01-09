@@ -3,6 +3,7 @@ import { stringify } from "csv-stringify/sync";
 import formatConfig from "../config/format.js";
 
 function getResourceName(req, isCollection) {
+  // Pour XML : choisir un nom racine correct
   const base = req.path.split("/").filter(Boolean).pop();
   if (!base) return "data";
   if (!isCollection && base.endsWith("s")) return base.slice(0, -1);
@@ -11,31 +12,49 @@ function getResourceName(req, isCollection) {
 
 export default (req, res, next) => {
   res.sendFormatted = (data) => {
-    const payload = data.data !== undefined ? data.data : data;
-    const format = req.query.format || formatConfig.defaultFormat;
-    const isCollection = Array.isArray(payload);
-    const rootName = getResourceName(req, isCollection);
-
     try {
+      // On récupère le payload réel
+      const payload = data.data !== undefined ? data.data : data;
+      const isCollection = Array.isArray(payload);
+      const rootName = getResourceName(req, isCollection);
+
+      const format = req.query.format || formatConfig.defaultFormat;
+
       if (format === "xml") {
-        return res.type("application/xml").send(
-          create({ [rootName]: payload }).end({ prettyPrint: formatConfig.xmlIndent })
-        );
+        // XML avec un élément racine correct
+        const xmlObj = isCollection
+          ? { [rootName]: { item: payload } } // tableau → <root><item>...</item></root>
+          : { [rootName]: payload };          // objet → <root>...</root>
+
+        return res
+          .type("application/xml")
+          .send(create(xmlObj).end({ prettyPrint: formatConfig.xmlIndent }));
       }
 
       if (format === "csv") {
-        return res.type("text/csv").send(
-          stringify(payload, { header: true, delimiter: formatConfig.csvDelimiter })
-        );
+        // CSV : fonctionne seulement pour des tableaux d'objets
+        if (!isCollection) {
+          return res.status(400).json({
+            errors: { message: "CSV export requires a collection" },
+          });
+        }
+
+        return res
+          .type("text/csv")
+          .send(
+            stringify(payload, {
+              header: true,
+              delimiter: formatConfig.csvDelimiter,
+            })
+          );
       }
 
-      return res.json({
-        data: payload,
-        links: data.links || undefined
-      });
+      // JSON par défaut
+      return res.json({ ...data, data: payload });
     } catch (err) {
       next(err);
     }
   };
+
   next();
 };
