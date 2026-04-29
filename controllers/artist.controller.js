@@ -66,11 +66,18 @@ export const updateArtist = async (req, res, next) => {
 
 export const deleteArtist = async (req, res, next) => {
   try {
-    const artist = await Artist.findByPk(req.params.id);
-    if (!artist) return res.sendStatus(404);
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ errors: { message: "ID invalide" } });
+    }
+
+    const artist = await Artist.findByPk(id);
+    if (!artist) {
+      return res.status(404).json({ errors: { message: "Artiste non trouvé" } });
+    }
 
     await artist.destroy();
-    res.sendStatus(204); 
+    res.status(204).end();
   } catch (err) {
     next(err);
   }
